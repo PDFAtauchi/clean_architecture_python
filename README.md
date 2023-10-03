@@ -6,3 +6,6 @@
 
 # Coverage
 - pytest -svv --cov=. --cov-report=term-missing
+
+# To run app
+- FLASK_CONFIG="development" flask run
