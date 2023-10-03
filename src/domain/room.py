@@ -1,6 +1,7 @@
 import uuid
 import dataclasses
 
+
 @dataclasses.dataclass
 class Room:
     code: uuid.UUID
@@ -12,6 +13,6 @@ class Room:
     @classmethod
     def from_dict(cls, data_dict):
         return cls(**data_dict)
-    
+
     def to_dict(self):
         return dataclasses.asdict(self)
