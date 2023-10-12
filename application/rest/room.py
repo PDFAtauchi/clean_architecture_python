@@ -1,13 +1,23 @@
 import json
 
-from flask import Blueprint, Response
+from flask import Blueprint, Response, request
 
 from src.repository.inmemoryrepository import InMemoryRepository
 from src.use_cases.room_list import room_list_use_case
 from src.serializers.room import RoomJsonEncoder
+from src.requests.room_list import build_room_list_request
+from src.responses.responses import ResponseTypes
 
 
 blueprint = Blueprint("room", __name__)
+
+
+STATUS_CODES = {
+    ResponseTypes.SUCCESS: 200,
+    ResponseTypes.RESOURCE_ERROR: 404,
+    ResponseTypes.PARAMETERS_ERROR: 400,
+    ResponseTypes.SYSTEM_ERROR: 500,
+}
 
 rooms = [
     {
@@ -43,11 +53,21 @@ rooms = [
 
 @blueprint.route("/rooms", methods=["GET"])
 def room_list():
+    query_params = {
+        "filters": {}
+    }
+
+    for arg, values in request.args.items():
+        if arg.startswith("filter_"):
+            query_params["filters"][arg.replace("filter_", "")] = values
+
+    request_object = build_room_list_request(filters=query_params["filters"])
+
     repo = InMemoryRepository(rooms)
-    result = room_list_use_case(repo)
+    response = room_list_use_case(repo, request_object)
 
     return Response(
-        json.dumps(result, cls=RoomJsonEncoder),
+        json.dumps(response.value, cls=RoomJsonEncoder),
         mimetype="application/json",
-        status=200
+        status=STATUS_CODES[response.type]
     )
