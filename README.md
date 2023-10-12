@@ -1,11 +1,8 @@
 # install requirements
 - pip install -r requirements/dev.txt
 
-# Run unit tests
-- pytest -svv
-
-# Run all tests(including integration)
-- pytest -svv --integration
+# Run tests
+- ./manage.py test -- --integration
 
 # Coverage
 - pytest -svv --cov=. --cov-report=term-missing
